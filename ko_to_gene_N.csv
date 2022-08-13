@@ -1,0 +1,72 @@
+﻿KO,gene,reaction,pathway,mean ORF length in MT,HMM source,Threshold type,Threshold bitscore,color
+K20932,hzsC,nitric oxide to hydrazine,Annamox,0,METABOLIC,NA,NA,white
+K20933,hzsB,nitric oxide to hydrazine,Annamox,0,KEGG,NA,NA,white
+K20934,hzsA,nitric oxide to hydrazine,Annamox,0,KEGG,NA,NA,white
+K20935,hdh/hzoA,hydrazine to dinitrogen,Annamox,0,METABOLIC,NA,NA,white
+K00360,nasB,nitrate to nitrite,ANRA,0,KEGG,Total,513.12,#A6CEE3
+K00366,nirA,nitrite to ammonia,ANRA,428,KEGG,Total,206,#A6CEE3
+K00367,narB,nitrate to nitrite,ANRA,0,KEGG,NA,NA,#A6CEE3
+K00372,nasA,nitrate to nitrite,ANRA,724,KEGG,Domain,655,#A6CEE3
+K10534,NR,nitrate to nitrite,ANRA,596,KEGG,Total,465.63,#A6CEE3
+K17877,nit-6,nitrite to ammonia,ANRA,869,KEGG,Domain,950,#A6CEE3
+K07273,lys,Lysozyme,cellwall,771,KEGG,,,#1F78B4
+K01725,cynS,cyanate to carbamate,Cyanate,164,KEGG,Total,52.33,white
+K00370,narG,nitrate to nitrite,Denitrification,569,KEGG,Domain,273.23,#B2DF8A
+K00371,narH,nitrate to nitrite,Denitrification,420,KEGG,Total,222.87,#B2DF8A
+K00374,narI,nitrate to nitrite,Denitrification,278,KEGG,Total,67,#B2DF8A
+K00376,nosZ,nitrous oxide to nitrogen,Denitrification,481,KEGG,Total,276.1,#B2DF8A
+K02305,norC,nitric oxide to nitrous oxide,Denitrification,362,METABOLIC,Total,50,#B2DF8A
+K04561,norB,nitric oxide to nitrous oxide,Denitrification,409,METABOLIC,Total,80,#B2DF8A
+K05601,hcp,hydroxylamine to ammonia,Denitrification,426,KEGG,Total,105.9,#B2DF8A
+K15864,nirS,nitrite to nitric oxide,Denitrification,494,METABOLIC,Total,200,#B2DF8A
+K15877,cyp55,fungal nitric oxide to nitrous oxide,Denitrification,378,KEGG,Total,511.93,#B2DF8A
+K00362,nirB,nitrite to ammonia,DNRA,633,KEGG,Domain,542.57,#33A02C
+K00363,nirD,nitrite to ammonia,DNRA,208,KEGG,Domain,94.13,#33A02C
+K02567,napA,nitrate to nitrite,DNRA,605,KEGG,Domain,637.77,#33A02C
+K02568,napB,nitrate to nitrite,DNRA,123,KEGG,Domain,30.57,#33A02C
+K03385,nrfA,nitrite to ammonia,DNRA,434,KEGG,Total,133.13,#33A02C
+K15876,nrfH,nitrite to ammonia,DNRA,160,KEGG,Total,111.07,#33A02C
+K01183,chit1,Chitinase,chit,476,KEGG,,,#6A3D9A
+K03791,putative_chitinase,Chitinase,chit,218,KEGG,,,#6A3D9A
+K13381,chiA,Chitinase,chit,0,KEGG,NA,,#6A3D9A
+K17523,CHI3L1_2,Chitinase,chit,0,KEGG,NA,,#6A3D9A
+K17524,CHI3L1_4,Chitinase,chit,0,KEGG,NA,NA,#6A3D9A
+K17525,CHID1,Chitinase,chit,357,KEGG,,NA,#6A3D9A
+K07004,Xds,Exoribonuclease,exonuc,1896,KEGG,,,#FFFF99
+K00260,gudB,Glutamate dehydrogenase,GDH,400,KEGG,,,#FB9A99
+K15371,gdh2,Glutamate dehydrogenase,GDH,940,KEGG,,,#FB9A99
+K00264,glt1,Glutamate synthase,GSGOGAT,2188,KEGG,,NA,#E31A1C
+K00265,gltB,Glutamate synthase large chain,GSGOGAT,1112,KEGG,,,#E31A1C
+K00266,gltD,Glutamate synthase small chain,GSGOGAT,488,KEGG,,,#E31A1C
+K01915,glnA,Glutamate synthase,GSGOGAT,376,KEGG,,,#E31A1C
+K01505,accD,ethylene repression,hormone,347,KEGG,,,white
+K04124,GA3ox,Gibberelin 3beta-dioxygenase,hormone,0,KEGG,NA,,white
+K00480,nahG,Salicylate hydroxylase,hormone,373,KEGG,,,white
+K14506,JAR1,Jasmonic acid-amino synthetase,hormone,444,KEGG,,NA,white
+K22027,iacA,indole-3-acetate monooxygenase,hormone,0,KEGG,NA,,white
+K00368,nirK,nitrite to nitric oxide,Nitrification,387,KEGG,Total,212.43,#FDBF6F
+K10535,hao,hydroxylamine to nitrite,Nitrification,512,KEGG,Total,281.83,#FDBF6F
+K10944,amoA,ammonia to hydroxylamine,Nitrification,265,KEGG,Total,192.77,#FDBF6F
+K10945,amoB,ammonia to hydroxylamine,Nitrification,335,KEGG,Total,161.43,#FDBF6F
+K10946,amoC,ammonia to hydroxylamine,Nitrification,255,KEGG,Total,152.7,#FDBF6F
+K01501,nitrilase,nitrile to ammonia,Nitrile,0,KEGG,NA,NA,white
+K00459,ncd2,nitroalkane to ammonia,Nitroalkane,0,KEGG,NA,NA,white
+K19823,nao,nitroalkane to ammonia,Nitroalkane,0,KEGG,NA,NA,white
+K00531,anfG,dinitrogen to ammonia,Nitrogen fixation,0,KEGG,NA,NA,black
+K02586,nifD,dinitrogen to ammonia,Nitrogen fixation,531,KEGG,Total,534.6,black
+K02588,nifH,dinitrogen to ammonia,Nitrogen fixation,292,KEGG,Total,358.8,black
+K02591,nifK,dinitrogen to ammonia,Nitrogen fixation,455,KEGG,Total,504.63,black
+K22896,vnfD,dinitrogen to ammonia,Nitrogen fixation,0,KEGG,NA,NA,black
+K22897,vnfK,dinitrogen to ammonia,Nitrogen fixation,0,KEGG,NA,NA,black
+K22898,vnfG,dinitrogen to ammonia,Nitrogen fixation,0,KEGG,NA,NA,black
+K22899,vnfH,dinitrogen to ammonia,Nitrogen fixation,0,KEGG,NA,NA,black
+K05916,hmp,nitric oxide to nitrate,NO_detox,381,KEGG,,,white
+K00990,glnD,N regulator,reg,472,KEGG,,,#FF7F00
+K04751,glnB,N regulator,reg,116,KEGG,,,#FF7F00
+K07708,glnL,N regulator,reg,349,KEGG,,,#FF7F00
+K07712,glnG,N regulator,reg,461,KEGG,,,#FF7F00
+K04752,glnK,amt regulator,reg,113,KEGG,,,#FF7F00
+K03320,amt,ammonia transporter,transport,394,KEGG,,,#CAB2D6
+K01428,ureA,urease,urea,1176,KEGG,,,grey
+K01429,ureB,urease,urea,383,KEGG,,,grey
+K01430,ureC,urease,urea,310,KEGG,,,grey
