@@ -584,7 +584,7 @@ afe <- merge(afe, ggcols, by="Class")
 afe_cols <- which(colnames(afe) %like% "AFE")
 afe <- afe[order(afe$Phylum, afe$Color,decreasing = T),]
 # Draw AFE heatmap
-heatmap.2(as.matrix(afe[,afe_cols]), col=rampcols, cexCol = 1, cexRow=0.2, density.info="none", trace="none", labRow = afe$bin, Rowv = FALSE, Colv=FALSE, RowSideColors = afe$Color)
+heatmap3(as.matrix(afe[,afe_cols]), col=rampcols, cexCol = 1, cexRow=0.2, labRow = afe$bin, Rowv = NA, Colv=NA, RowSideColors = afe$Color)
 # Create RPKM heatmap for figure 3
 rpkm <- read.delim("coverm_RPKM.txt", header=T, stringsAsFactors = F, sep="\t")
 rpkm <- rpkm[rowSums(rpkm[,2:25])>0,]
@@ -596,11 +596,66 @@ rpkm <- dcast(rpkm_melt, Genome~grp)
 rpkm_enr <- rpkm[rpkm$Genome %in% afe$bin,]
 rpkm_enr <- rpkm_enr[match(afe$bin, rpkm_enr$Genome),]
 ord <- c("X12C16O_0h_100", "X12C16O_24h_100", "X12C16O_48h_100", "X12C16O_72h_100", "X12C16O_168h_100", "X12C16O_0h_50", "X12C16O_48h_50", "X12C16O_168h_50")
-heatmap.2(as.matrix(rpkm_enr[,ord]), col=rc2, cexCol = 1, cexRow=0.2, density.info="none", trace="none", labRow = rpkm_enr$Genome, Rowv = FALSE, Colv=FALSE)
-
+heatmap3(as.matrix(rpkm_enr[,ord]), col=rc2, cexCol = 1, cexRow=0.2, labRow = rpkm_enr$Genome, Rowv = NA, Colv=NA, margins=c(0,0))
 leg <- unique(afe[,c("Class", "Color")])
 plot.new()
 legend("topleft", legend=leg$Class, fill=leg$Color, xpd=T, inset=c(0,-0.2))
+
+# Create supplemental table S1 - genome info, RPKM and median AFE
+sts1 <- read.csv("coverm_rpkm_wFirmicutes_corrected.csv", header=T, stringsAsFactors = F) %>%
+  dplyr::rename(bin = Genome) %>%
+  left_join(afe[, c(2, which(colnames(afe) %like% "AFE"))]) %>%
+  dplyr::rename(Bin = bin) %>%
+  left_join(tax, by="Bin") %>%
+  rename_at(vars(starts_with("X12C16O")), funs(sub("X12C16O", "RPKM", .))) %>%
+  dplyr::rename(MAG = Bin) %>%
+  left_join(mag_info)
+afe_cols <- which(colnames(sts1) %like% "AFE")
+rpkm_cols <- which(colnames(sts1) %like% "RPKM")
+sts1$Detected <- FALSE
+sts1$Detected[rowSums(sts1[,rpkm_cols]) > 0] <- TRUE
+sts1$Growing <- FALSE
+sts1$Growing[sts1$AFE_168h>0 | sts1$AFE_168h_50>0 | sts1$AFE_48h>0 | sts1$AFE_48h_50>0 | sts1$AFE_24h>0 | sts1$AFE_72h>0] <- TRUE
+write.table(sts1, "../Traits_paper/sup_tbl_S1_RPKM_AFE_info.tsv", sep="\t")
+
+# Regression to check whether rpkm and afe really are inversely correlated
+temp <- rpkm_enr %>%
+  dplyr::rename(bin = Genome) %>%
+  left_join(afe, by="bin")
+x <- temp$AFE_24h[temp$AFE_24h>0]
+y <- temp$X12C16O_24h_100[temp$AFE_24h>0]
+x <- c(x, temp$AFE_48h[temp$AFE_48h>0])
+y <- c(y, temp$X12C16O_48h_100[temp$AFE_48h>0])
+x <- c(x, temp$AFE_72h[temp$AFE_72h>0])
+y <- c(y, temp$X12C16O_72h_100[temp$AFE_72h>0])
+x <- c(x, temp$AFE_168h[temp$AFE_168h>0])
+y <- c(y, temp$X12C16O_168h_100[temp$AFE_168h>0])
+x <- c(x, temp$AFE_48h_50[temp$AFE_48h_50>0])
+y <- c(y, temp$X12C16O_48h_50[temp$AFE_48h_50>0])
+x <- c(x, temp$AFE_168h_50[temp$AFE_168h_50>0])
+y <- c(y, temp$X12C16O_168h_50[temp$AFE_168h_50>0])
+
+reg <- summary(lm(log(y+1)~x))
+plot(x, log(y), pch=20, xlab="Abundance (RPKM)", ylab="Log AFE")
+abline(a=coefficients(reg)[1], b=coefficients(reg)[2], col = "blue")
+
+# How many growing organisms are enriched in multiple time points?
+temp2 <- temp
+temp2$AFE_168h[temp2$AFE_168h > 0] <- 1 
+temp2$AFE_168h_50[temp2$AFE_168h_50 > 0] <- 1
+temp2$AFE_48h[temp2$AFE_48h > 0] <- 1
+temp2$AFE_48h_50[temp2$AFE_48h_50 > 0] <- 1
+temp2$AFE_24h[temp2$AFE_24h > 0] <- 1
+temp2$AFE_72h[temp2$AFE_72h > 0] <- 1
+temp2$AFE_168h[temp2$AFE_168h < 0] <- 0
+temp2$AFE_168h_50[temp2$AFE_168h_50 < 0] <- 0
+temp2$AFE_48h[temp2$AFE_48h < 0] <- 0
+temp2$AFE_48h_50[temp2$AFE_48h_50 < 0] <- 0
+temp2$AFE_24h[temp2$AFE_24h < 0] <- 0
+temp2$AFE_72h[temp2$AFE_72h < 0] <- 0
+
+count(rowSums(temp2[,c("AFE_24h", "AFE_48h", "AFE_72h", "AFE_168h")]) > 1) # 63
+count(rowSums(temp2[,c("AFE_48h_50", "AFE_168h_50")]) > 1) # 30
 
 # Functions in enriched MAGs - 79 with AFE confidence interval lower limit>0
 library("devtools")
@@ -939,10 +994,16 @@ unenr_comp <- mag_info$completeness[mag_info$MAG %in% unenr_mags]
 t.test(enr_comp, unenr_comp)
 
 # Compare completeness between fast and slow growers
+mag_info_us <- mag_info %>%
+  mutate(MAG = gsub("-", "_", gsub("\\.", "_", MAG)))
+afe_us <- afe %>%
+  mutate(bin = gsub("-", "_", gsub("\\.", "_", bin)))
 fast_grow <- scan("../Traits_paper/fast_growers.txt", sep="\n", what = "charater")
-slow_grow <- enr_mags$Bin[!(enr_mags$Bin %in% fast_grow)]
-fast_comp <- mag_info$completeness[mag_info$MAG %in% fast_grow]
-slow_comp <- mag_info$completeness[mag_info$MAG %in% slow_grow]
+fast_grow <- gsub("-", "_", gsub("\\.", "_", fast_grow))
+slow_grow <- afe_us$bin[!(afe_us$bin %in% fast_grow)]
+slow_grow <- gsub("-", "_", gsub("\\.", "_", slow_grow))
+fast_comp <- mag_info_us$completeness[mag_info_us$MAG %in% fast_grow]
+slow_comp <- mag_info_us$completeness[mag_info_us$MAG %in% slow_grow]
 t.test(fast_comp, slow_comp)
 
 all_cazy <- read.csv("DRAM/all_MAGs_metabolism_summary_cazy.csv") %>%
@@ -955,14 +1016,16 @@ all_cazy$genome <- gsub("_H.*", "", all_cazy$genome)
 fast_grow <- gsub("-", "\\.", fast_grow)
 slow_grow <- gsub("-", "\\.", slow_grow)
 
-fast_grow_cazy <- all_cazy %>%
+all_cazy_us <- all_cazy %>%
+  mutate(genome = gsub("\\.", "_", gsub("-", "_", genome)))
+fast_grow_cazy <- all_cazy_us %>%
   filter(genome %in% fast_grow) %>%
   column_to_rownames("genome") 
 fast_grow_cazy[fast_grow_cazy != ""] <- 1
 fast_grow_cazy[fast_grow_cazy == ""] <- 0 
 fast_grow_cazy <- fast_grow_cazy %>% mutate_all(as.numeric)
 
-slow_grow_cazy <- all_cazy %>%
+slow_grow_cazy <- all_cazy_us %>%
   filter(genome %in% slow_grow) %>%
   column_to_rownames("genome") 
 slow_grow_cazy[slow_grow_cazy != ""] <- 1
@@ -975,8 +1038,32 @@ t.test(fgc_sum, fsc_sum, alternative="less") #p=0.02, t=-2
 mean(fgc_sum) #33
 mean(fsc_sum) #41
 
+# Plot number of cazy genes per genome by AFWE per time point
+tax_us <- tax %>%
+  mutate(Bin = gsub("-", "_", gsub("\\.", "_", Bin)))
+fc <- data.frame(c(fgc_sum, fsc_sum), row.names=c(names(fgc_sum), names(fsc_sum))) %>%
+  rownames_to_column("bin") %>%
+  left_join(afe_us) %>%
+  dplyr::rename(Bin = bin) %>%
+  left_join(tax_us) %>%
+  dplyr::rename(cazy_num = c.fgc_sum..fsc_sum.) %>%
+  mutate(phylum = gsub(".*p__", "", gsub(";c__.*", "", classification)))
+temp <- fc[fc$AFE_24h>0,]
+p24 <- ggplot(data=temp, aes(x=AFE_24h, y=cazy_num, color=phylum)) + theme_classic() + geom_point() + geom_vline(xintercept = 0.2)
+temp <- fc[fc$AFE_48h>0,]
+p48 <- ggplot(data=temp, aes(x=AFE_48h, y=cazy_num, color=phylum)) + theme_classic() + geom_point() + geom_vline(xintercept = 0.2)
+temp <- fc[fc$AFE_72h>0,]
+p72 <- ggplot(data=temp, aes(x=AFE_48h, y=cazy_num, color=phylum)) + theme_classic() + geom_point() + geom_vline(xintercept = 0.2)
+temp <- fc[fc$AFE_168h>0,]
+p168 <- ggplot(data=temp, aes(x=AFE_168h, y=cazy_num, color=phylum)) + theme_classic() + geom_point() + geom_vline(xintercept = 0.2)
+temp <- fc[fc$AFE_48h_50>0,]
+p48_50 <- ggplot(data=temp, aes(x=AFE_48h_50, y=cazy_num, color=phylum)) + theme_classic() + geom_point() + geom_vline(xintercept = 0.2)
+temp <- fc[fc$AFE_168h_50>0,]
+p168 <- ggplot(data=temp, aes(x=AFE_168h_50, y=cazy_num, color=phylum)) + theme_classic() + geom_point() + geom_vline(xintercept = 0.2)
+
 # CAZy differential abundance from enriched MAGs
-betas_CAZy_enr <- betas_CAZy[betas_CAZy$Bin %in% enr_MAGs$enr_MAGs_,] #817 genes
+enr_MAGs_us <- gsub("\\.", "_", gsub("-", "_", enr_MAGs))
+betas_CAZy_enr <- betas_CAZy[betas_CAZy$Bin %in% enr_MAGs_us,] #817 genes
 # Get rid of central carbon cycle genes
 unique(betas_CAZy_enr$subheader)
 betas_CAZy_enr <- betas_CAZy_enr[!(betas_CAZy_enr$subheader %in% c("glycolysis", "TCA", "", "pentose pathway", "galacturonic acid degradation")),]
@@ -1249,12 +1336,13 @@ for (i in 1:ncol(T_df)) {
   T_df[1, i] <- nrow(T_enr[T_enr$pfam == colnames(T_df[i]),])/1.13 #calculate % of enriched MAGs that have the gene at least once
   T_df[2, i] <- nrow(T_all[T_all$pfam == colnames(T_df[i]),])/5.03 #calculate % of MAGs that have the gene at least once
 }
-t.test(t(T_df[1,]), t(T_df[2,]), paired=TRUE, alternative="greater") 
-wilcox.test(t(T_df[1,]), t(T_df[2,]), paired=TRUE, alternative="greater")
+t.test(t(T_df[1,]), t(T_df[2,]), paired=TRUE, alternative="greater") #p=0.002
+wilcox.test(t(T_df[1,]), t(T_df[2,]), paired=TRUE, alternative="greater") #p=0.002
 plot.new()
 par(mfrow=c(1,1))
 barplot(as.matrix(T_df[,order(-T_df[2,])]), las=2, beside=T, xlab="Gene name", ylab="% of MAGs with function")
 legend("topright", legend=c("Growing organisms", "Whole community"), fill=c("black", "lightgrey"))
+# Comparing precipitation treatments - not significant
 T_enr_50 <- T_enr[T_enr$fasta %in% afe50$bin,]
 T_enr_100 <- T_enr[T_enr$fasta %in% afe100$bin,]
 for (i in 1:ncol(T_df)) {
@@ -1262,6 +1350,7 @@ for (i in 1:ncol(T_df)) {
   T_df[2, i] <- nrow(T_enr_100[T_enr_100$pfam == colnames(T_df[i]),])/(nrow(T_enr_100)/100) #calculate % of MAGs that have the gene at least once
 }
 t.test(t(T_df[1,]), t(T_df[2,]), paired=TRUE) 
+wilcox.test(t(T_df[1,]), t(T_df[2,]), paired=TRUE) 
 plot.new()
 par(mfrow=c(1,1))
 barplot(as.matrix(T_df[,order(-T_df[2,])]), las=2, beside=T, xlab="Gene name", ylab="% of MAGs with function")
